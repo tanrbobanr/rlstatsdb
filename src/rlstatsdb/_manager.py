@@ -161,6 +161,7 @@ class Manager:
                 _add_player(db_conn, pdata, uid, team)
         db_conn.commit()
         db_conn.close()
+        return uid
     
     def get(self, manifest_id: int) -> models.Game:
         """Get a replay at the given manifest ID as a ``Game`` object.
