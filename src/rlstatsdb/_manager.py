@@ -176,6 +176,8 @@ class Manager:
         db_cur = db_conn.cursor()
         mdata = db_cur.execute("SELECT * FROM MANIFEST WHERE id=?",
                                (manifest_id,)).fetchone()
+        if not mdata:
+            raise ValueError(f"entry with manifest ID of {manifest_id} does not exist")
         t0data, t1data = db_cur.execute("SELECT * FROM TEAMS WHERE "
                                         "manifest_id=? ORDER BY team ASC",
                                         (manifest_id,)).fetchall()
@@ -185,3 +187,12 @@ class Manager:
                                 "AND team=?", (manifest_id, 1)).fetchall()
         db_conn.close()
         return models.Game(mdata, t0data, t1data, p0data, p1data)
+    
+    def remove(self, manifest_id: int) -> None:
+        db_conn = self._db_conn
+        db_cur = db_conn.cursor()
+        db_cur.execute("DELETE FROM MANIFEST WHERE id=?", (manifest_id,))
+        db_cur.execute("DELETE FROM TEAMS WHERE manifest_id=?", (manifest_id,))
+        db_cur.execute("DELETE FROM PLAYERS WHERE manifest_id=?", (manifest_id,))
+        db_conn.commit()
+        db_conn.close()

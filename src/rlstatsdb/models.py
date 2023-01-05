@@ -7,83 +7,104 @@ ballchasing.com's API).
 
 """
 
-import typing
 from . import constants
 from . import utils
 from . import types
+import typing
+import prepr
 
 
-class Rank(types.Rank):
+class Generic:
+    def __repr__(self, *args, **kwargs) -> prepr.pstr:
+        _dict = {k:getattr(self, k) for k in self.__slots__}
+        return prepr.prepr(self).kwargs(**_dict).build(simple=True, *args, **kwargs)
+
+
+class Rank(types.Rank, Generic):
     __slots__ = constants.attrs_Rank
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_Rank, __data)
 
-class Id(types.Id):
+
+class Id(types.Id, Generic):
     __slots__ = constants.attrs_Id
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_Id, __data)
 
-class Camera(types.Camera):
+
+class Camera(types.Camera, Generic):
     __slots__ = constants.attrs_Camera
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_Camera, __data)
 
-class PStats_core(types.PStats_core):
+
+class PStats_core(types.PStats_core, Generic):
     __slots__ = constants.attrs_PStats_core
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_PStats_core, __data)
 
-class PStats_boost(types.PStats_boost):
+
+class PStats_boost(types.PStats_boost, Generic):
     __slots__ = constants.attrs_PStats_boost
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_PStats_boost, __data)
 
-class PStats_movement(types.PStats_movement):
+
+class PStats_movement(types.PStats_movement, Generic):
     __slots__ = constants.attrs_PStats_movement
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_PStats_movement, __data)
 
-class PStats_positioning(types.PStats_positioning):
+
+class PStats_positioning(types.PStats_positioning, Generic):
     __slots__ = constants.attrs_PStats_positioning
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_PStats_positioning, __data)
 
-class PStats_demo(types.PStats_demo):
+
+class PStats_demo(types.PStats_demo, Generic):
     __slots__ = constants.attrs_PStats_demo
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_PStats_demo, __data)
 
-class TStats_ball(types.TStats_ball):
+
+class TStats_ball(types.TStats_ball, Generic):
     __slots__ = constants.attrs_TStats_ball
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_ball, __data)
 
-class TStats_core(types.TStats_core):
+
+class TStats_core(types.TStats_core, Generic):
     __slots__ = constants.attrs_TStats_core
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_core, __data)
 
-class TStats_boost(types.TStats_boost):
+
+class TStats_boost(types.TStats_boost, Generic):
     __slots__ = constants.attrs_TStats_boost
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_boost, __data)
 
-class TStats_movement(types.TStats_movement):
+
+class TStats_movement(types.TStats_movement, Generic):
     __slots__ = constants.attrs_TStats_movement
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_movement, __data)
 
-class TStats_positioning(types.TStats_positioning):
+
+class TStats_positioning(types.TStats_positioning, Generic):
     __slots__ = constants.attrs_TStats_positioning
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_positioning, __data)
 
-class TStats_demo(types.TStats_demo):
+
+class TStats_demo(types.TStats_demo, Generic):
     __slots__ = constants.attrs_TStats_demo
     def __init__(self, __data: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_TStats_demo, __data)
 
-class PStats(types.PStats):
+
+class PStats(types.PStats, Generic):
     __slots__ = ("core", "boost", "movement", "positioning", "demo")
     def __init__(self, __data: typing.Iterable) -> None:
         self.core = PStats_core(__data[:9])
@@ -92,7 +113,8 @@ class PStats(types.PStats):
         self.positioning = PStats_positioning(__data[55:82])
         self.demo = PStats_demo(__data[82:])
 
-class TStats(types.TStats):
+
+class TStats(types.TStats, Generic):
     __slots__ = ("ball", "core", "boost", "movement", "positioning", "demo")
     def __init__(self, __data: typing.Iterable) -> None:
         self.ball = TStats_ball(__data[5:7])
@@ -102,7 +124,8 @@ class TStats(types.TStats):
         self.positioning = TStats_positioning(__data[46:53])
         self.demo = TStats_demo(__data[53:])
 
-class Player(types.Player):
+
+class Player(types.Player, Generic):
     __slots__ = constants.attrs_Player + ["id", "rank", "camera", "stats"]
     def __init__(self, __pdata: typing.Iterable) -> None:
         utils.setattrs(self, constants.attrs_Player, __pdata[3:9])
@@ -111,7 +134,8 @@ class Player(types.Player):
         self.camera = Camera(__pdata[15:22])
         self.stats = PStats(__pdata[22:])
 
-class Team(types.Team):
+
+class Team(types.Team, Generic):
     __slots__ = constants.attrs_Team + ["players", "stats"]
     def __init__(self, __tdata: typing.Iterable,
                  __pdata: typing.Iterable[typing.Iterable]) -> None:
@@ -119,7 +143,8 @@ class Team(types.Team):
         self.players = [Player(p) for p in __pdata]
         self.stats = TStats(__tdata)
 
-class Game(types.Game):
+
+class Game(types.Game, Generic):
     __slots__ = constants.attrs_Game + ["min_rank", "max_rank", "blue",
                                         "orange"]
     def __init__(self, __mdata: typing.Iterable, __t0data: typing.Iterable,

@@ -11,7 +11,7 @@ __author__ = "Tanner B. Corcoran"
 __email__ = "tannerbcorcoran@gmail.com"
 __license__ = "MIT License"
 __copyright__ = "Copyright (c) 2022 Tanner B. Corcoran"
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 __description__ = ("A simple and pythonic system to store, retrieve, and "
                    "analyze Rocket League replay stats as returned from "
                    "ballchasing.com's API.")
