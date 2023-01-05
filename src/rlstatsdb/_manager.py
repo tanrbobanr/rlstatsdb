@@ -138,13 +138,15 @@ class Manager:
         conn = sqlite3.connect(self.db_path)
         return conn
     
-    def add(self, replay_data: dict) -> int:
+    def add(self, replay_data: dict, connection_override: sqlite3.Connection = None) -> int:
         """Add a replay dictionary to the database.
 
         Arguments
         ---------
         replay_data : dict
             Replay data as returned from ballchasing.com/api/replays/<id>
+        connection_override : Connection
+            If provided, all operation will use the given connection and no commits will be made.
         
         Returns
         -------
@@ -152,15 +154,19 @@ class Manager:
             The manifest ID
         
         """
-        db_conn = self._db_conn
+        if connection_override:
+            db_conn = connection_override
+        else:
+            db_conn = self._db_conn
         uid = _add_manifest(db_conn, replay_data)
         for team in ("blue", "orange"):
             tdata = replay_data[team]
             _add_team(db_conn, tdata, uid, team)
             for pdata in tdata["players"]:
                 _add_player(db_conn, pdata, uid, team)
-        db_conn.commit()
-        db_conn.close()
+        if not connection_override:
+            db_conn.commit()
+            db_conn.close()
         return uid
     
     def get(self, manifest_id: int) -> models.Game:
@@ -188,11 +194,15 @@ class Manager:
         db_conn.close()
         return models.Game(mdata, t0data, t1data, p0data, p1data)
     
-    def remove(self, manifest_id: int) -> None:
-        db_conn = self._db_conn
+    def remove(self, manifest_id: int, connection_override: sqlite3.Connection = None) -> None:
+        if connection_override:
+            db_conn = connection_override
+        else:
+            db_conn = self._db_conn
         db_cur = db_conn.cursor()
         db_cur.execute("DELETE FROM MANIFEST WHERE id=?", (manifest_id,))
         db_cur.execute("DELETE FROM TEAMS WHERE manifest_id=?", (manifest_id,))
         db_cur.execute("DELETE FROM PLAYERS WHERE manifest_id=?", (manifest_id,))
-        db_conn.commit()
-        db_conn.close()
+        if not connection_override:
+            db_conn.commit()
+            db_conn.close()
